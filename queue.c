@@ -15,11 +15,18 @@
  * Create empty queue.
  * Return NULL if could not allocate space.
  */
+
 struct list_head *q_new()
 {
-    return NULL;
+    struct list_head *new_node =
+        (struct list_head *) malloc(sizeof(struct list_head));
+    if (new_node == NULL) {
+        fprintf(stderr, "Error: unable to allocate required memory\n");
+        return NULL;
+    }
+    INIT_LIST_HEAD(new_node);
+    return new_node;
 }
-
 /* Free all storage used by queue */
 void q_free(struct list_head *l) {}
 
@@ -32,6 +39,22 @@ void q_free(struct list_head *l) {}
  */
 bool q_insert_head(struct list_head *head, char *s)
 {
+    if (!head)
+        return false;
+    size_t slen = strlen(s) + 1;
+    element_t *new_node;
+    if (!(new_node = (element_t *) malloc(sizeof(element_t))))
+        return false;
+
+
+    if (!(new_node->value = (char *) malloc(sizeof(char) * slen))) {
+        free(new_node);
+        return false;
+    }
+
+    memcpy(new_node->value, s, slen);
+    list_add(&new_node->list, head);
+
     return true;
 }
 
