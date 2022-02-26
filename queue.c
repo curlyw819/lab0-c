@@ -67,6 +67,22 @@ bool q_insert_head(struct list_head *head, char *s)
  */
 bool q_insert_tail(struct list_head *head, char *s)
 {
+    if (!head)
+        return false;
+    size_t slen = strlen(s) + 1;
+    element_t *new_node;
+    if (!(new_node = (element_t *) malloc(sizeof(element_t))))
+        return false;
+
+
+    if (!(new_node->value = (char *) malloc(sizeof(char) * slen))) {
+        free(new_node);
+        return false;
+    }
+
+    memcpy(new_node->value, s, slen);
+    list_add_tail(&new_node->list, head);
+
     return true;
 }
 
@@ -86,7 +102,13 @@ bool q_insert_tail(struct list_head *head, char *s)
  */
 element_t *q_remove_head(struct list_head *head, char *sp, size_t bufsize)
 {
-    return NULL;
+    if (!head || head->next == head || head->prev == head)
+        return NULL;
+    element_t *temp_node = list_first_entry(head, element_t, list);
+    if (sp)
+        memcpy(sp, temp_node->value, bufsize);
+    list_del(head->next);
+    return temp_node;
 }
 
 /*
@@ -95,7 +117,13 @@ element_t *q_remove_head(struct list_head *head, char *sp, size_t bufsize)
  */
 element_t *q_remove_tail(struct list_head *head, char *sp, size_t bufsize)
 {
-    return NULL;
+    if (!head || head->next == head || head->prev == head)
+        return NULL;
+    element_t *temp_node = list_last_entry(head, element_t, list);
+    if (sp)
+        memcpy(sp, temp_node->value, bufsize);
+    list_del(head->prev);
+    return temp_node;
 }
 
 /*
@@ -134,7 +162,19 @@ int q_size(struct list_head *head)
  */
 bool q_delete_mid(struct list_head *head)
 {
-    // https://leetcode.com/problems/delete-the-middle-node-of-a-linked-list/
+    if (!head || head->next == head)
+        return false;
+
+    struct list_head *slow_pointer = head;
+    struct list_head *fast_pointer = head;
+    do {
+        fast_pointer = fast_pointer->next->next;
+        slow_pointer = slow_pointer->next;
+    } while (fast_pointer != head && fast_pointer->next != head);
+    element_t *temp = list_entry(slow_pointer, element_t, list);
+    list_del(slow_pointer);
+    free(temp->value);
+    free(temp);
     return true;
 }
 
