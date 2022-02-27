@@ -189,7 +189,117 @@ bool q_delete_mid(struct list_head *head)
  */
 bool q_delete_dup(struct list_head *head)
 {
-    // https://leetcode.com/problems/remove-duplicates-from-sorted-list-ii/
+    if (!head)
+        return false;
+    int count = 0;
+    struct list_head *current_pointer = head->next;
+    struct list_head *ref_pointer = current_pointer;
+    struct list_head *temp_pointer;
+    struct list_head *temp_temp_pointer;
+    element_t *current_node = list_entry(current_pointer, element_t, list);
+    element_t *temp;
+    element_t *temp_node;
+    char *sp, *ref;
+    // sp = current_node->value;
+    ref = current_node->value;
+
+    while (current_pointer != head) {
+        current_node = list_entry(current_pointer, element_t, list);
+        sp = current_node->value;
+        if (count == 0) {
+            ref = current_node->value;
+            ref_pointer = current_pointer;
+            if (current_pointer->prev != head) {
+                temp = list_entry(current_pointer->prev, element_t, list);
+                if (strcmp(temp->value, ref) == 0) {
+                    printf("HI\n");
+                    current_pointer = current_pointer->prev;
+                    ref_pointer = current_pointer;
+                }
+            }
+        }
+
+        if (strcmp(sp, ref) == 0 && current_pointer->next != head) {
+            count++;
+
+        } else {
+            if (count > 1) {
+                // temp_node = list_entry(ref_pointer->prev, element_t, list);
+                temp_pointer = ref_pointer;
+                for (int i = 0; i < count; i++) {
+                    temp_temp_pointer = temp_pointer;
+                    temp_pointer = temp_pointer->next;
+                    temp_node = list_entry(temp_temp_pointer, element_t, list);
+                    list_del(temp_temp_pointer);
+                    free(temp_node->value);
+                    free(temp_node);
+                }
+                count = 0;
+                current_pointer = temp_pointer;
+                /*
+                printf("%s\n",
+                       list_entry(current_pointer, element_t, list)->value);
+                    */
+            } else {
+                count = 0;
+            }
+        }
+        current_pointer = current_pointer->next;
+    }
+
+    count = 0;
+    current_pointer = head->prev;
+    ref_pointer = current_pointer;
+    // temp_pointer = current_pointer;
+    // temp_temp_pointer = current_pointer;
+    current_node = list_entry(current_pointer, element_t, list);
+    // temp = list_entry(current_pointer, element_t, list);
+    // temp_node = current_node;
+    // sp = current_node->value;
+    ref = current_node->value;
+    while (current_pointer != head) {
+        current_node = list_entry(current_pointer, element_t, list);
+        sp = current_node->value;
+        if (count == 0) {
+            ref = current_node->value;
+            ref_pointer = current_pointer;
+            if (current_pointer->next != head) {
+                temp = list_entry(current_pointer->next, element_t, list);
+                if (strcmp(temp->value, ref) == 0) {
+                    printf("HI\n");
+                    current_pointer = current_pointer->next;
+                    ref_pointer = current_pointer;
+                }
+            }
+        }
+
+        if (strcmp(sp, ref) == 0 && current_pointer->prev != head) {
+            count++;
+
+        } else {
+            if (count > 1) {
+                // temp_node = list_entry(ref_pointer->next, element_t, list);
+                temp_pointer = ref_pointer;
+                for (int i = 0; i < count; i++) {
+                    temp_temp_pointer = temp_pointer;
+                    temp_pointer = temp_pointer->prev;
+                    temp_node = list_entry(temp_temp_pointer, element_t, list);
+                    list_del(temp_temp_pointer);
+                    free(temp_node->value);
+                    free(temp_node);
+                }
+                count = 0;
+                current_pointer = temp_pointer;
+                /*
+                printf("%s\n",
+                       list_entry(current_pointer, element_t, list)->value);
+                    */
+            } else {
+                count = 0;
+            }
+        }
+        current_pointer = current_pointer->prev;
+    }
     return true;
 }
 
