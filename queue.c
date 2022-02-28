@@ -200,7 +200,6 @@ bool q_delete_dup(struct list_head *head)
     element_t *temp;
     element_t *temp_node;
     char *sp, *ref;
-    // sp = current_node->value;
     ref = current_node->value;
 
     while (current_pointer != head) {
@@ -224,7 +223,6 @@ bool q_delete_dup(struct list_head *head)
 
         } else {
             if (count > 1) {
-                // temp_node = list_entry(ref_pointer->prev, element_t, list);
                 temp_pointer = ref_pointer;
                 for (int i = 0; i < count; i++) {
                     temp_temp_pointer = temp_pointer;
@@ -236,10 +234,6 @@ bool q_delete_dup(struct list_head *head)
                 }
                 count = 0;
                 current_pointer = temp_pointer;
-                /*
-                printf("%s\n",
-                       list_entry(current_pointer, element_t, list)->value);
-                    */
             } else {
                 count = 0;
             }
@@ -250,12 +244,7 @@ bool q_delete_dup(struct list_head *head)
     count = 0;
     current_pointer = head->prev;
     ref_pointer = current_pointer;
-    // temp_pointer = current_pointer;
-    // temp_temp_pointer = current_pointer;
     current_node = list_entry(current_pointer, element_t, list);
-    // temp = list_entry(current_pointer, element_t, list);
-    // temp_node = current_node;
-    // sp = current_node->value;
     ref = current_node->value;
     while (current_pointer != head) {
         current_node = list_entry(current_pointer, element_t, list);
@@ -278,7 +267,6 @@ bool q_delete_dup(struct list_head *head)
 
         } else {
             if (count > 1) {
-                // temp_node = list_entry(ref_pointer->next, element_t, list);
                 temp_pointer = ref_pointer;
                 for (int i = 0; i < count; i++) {
                     temp_temp_pointer = temp_pointer;
@@ -290,10 +278,6 @@ bool q_delete_dup(struct list_head *head)
                 }
                 count = 0;
                 current_pointer = temp_pointer;
-                /*
-                printf("%s\n",
-                       list_entry(current_pointer, element_t, list)->value);
-                    */
             } else {
                 count = 0;
             }
@@ -308,7 +292,22 @@ bool q_delete_dup(struct list_head *head)
  */
 void q_swap(struct list_head *head)
 {
-    // https://leetcode.com/problems/swap-nodes-in-pairs/
+    struct list_head *current = head;
+    int count = 0;
+    while (current->next != head && current->next->next != head) {
+        count++;
+        struct list_head *first = current->next;
+        struct list_head *second = current->next->next;
+        first->next = second->next;
+        current->next = second;
+        second->next = first;
+
+        first->next->prev = first;
+        first->prev = second;
+        second->prev = current;
+        current = current->next->next;
+    }
+    printf("%d", count);
 }
 
 /*
