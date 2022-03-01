@@ -21,7 +21,6 @@ struct list_head *q_new()
     struct list_head *new_node =
         (struct list_head *) malloc(sizeof(struct list_head));
     if (new_node == NULL) {
-        fprintf(stderr, "Error: unable to allocate required memory\n");
         return NULL;
     }
     INIT_LIST_HEAD(new_node);
@@ -59,16 +58,12 @@ bool q_insert_head(struct list_head *head, char *s)
     element_t *new_node;
     if (!(new_node = (element_t *) malloc(sizeof(element_t))))
         return false;
-
-
     if (!(new_node->value = (char *) malloc(sizeof(char) * slen))) {
         free(new_node);
         return false;
     }
-
     memcpy(new_node->value, s, slen);
     list_add(&new_node->list, head);
-
     return true;
 }
 
@@ -87,16 +82,12 @@ bool q_insert_tail(struct list_head *head, char *s)
     element_t *new_node;
     if (!(new_node = (element_t *) malloc(sizeof(element_t))))
         return false;
-
-
     if (!(new_node->value = (char *) malloc(sizeof(char) * slen))) {
         free(new_node);
         return false;
     }
-
     memcpy(new_node->value, s, slen);
     list_add_tail(&new_node->list, head);
-
     return true;
 }
 
@@ -140,7 +131,6 @@ element_t *q_remove_tail(struct list_head *head, char *sp, size_t bufsize)
         memcpy(sp, temp_node->value, bufsize);
         sp[bufsize - 1] = '\0';
     }
-
     list_del(head->prev);
     return temp_node;
 }
@@ -163,7 +153,6 @@ int q_size(struct list_head *head)
 {
     if (!head)
         return 0;
-
     int len = 0;
     struct list_head *li;
     list_for_each (li, head)
@@ -183,7 +172,6 @@ bool q_delete_mid(struct list_head *head)
 {
     if (!head || head->next == head)
         return false;
-
     struct list_head *slow_pointer = head;
     struct list_head *fast_pointer = head;
     do {
@@ -220,7 +208,6 @@ bool q_delete_dup(struct list_head *head)
     element_t *temp_node;
     char *sp, *ref;
     ref = current_node->value;
-
     while (current_pointer != head) {
         current_node = list_entry(current_pointer, element_t, list);
         sp = current_node->value;
@@ -236,10 +223,8 @@ bool q_delete_dup(struct list_head *head)
                 }
             }
         }
-
         if (strcmp(sp, ref) == 0 && current_pointer->next != head) {
             count++;
-
         } else {
             if (count > 1) {
                 temp_pointer = ref_pointer;
@@ -259,7 +244,6 @@ bool q_delete_dup(struct list_head *head)
         }
         current_pointer = current_pointer->next;
     }
-
     count = 0;
     current_pointer = head->prev;
     ref_pointer = current_pointer;
@@ -279,10 +263,8 @@ bool q_delete_dup(struct list_head *head)
                 }
             }
         }
-
         if (strcmp(sp, ref) == 0 && current_pointer->prev != head) {
             count++;
-
         } else {
             if (count > 1) {
                 temp_pointer = ref_pointer;
@@ -344,7 +326,6 @@ void q_reverse(struct list_head *head)
         temp = current->next;
         current->next = current->prev;
         current->prev = temp;
-
         current = temp;
     }
     temp = head->next;
@@ -389,7 +370,6 @@ void mergetwolist(struct list_head *head1,
     list_splice_tail_init(head1, head);
     list_splice_tail_init(head2, head);
 }
-
 void mergesort(struct list_head *head, int size)
 {
     if (!head || list_empty(head) || list_is_singular(head))
@@ -410,8 +390,6 @@ void mergesort(struct list_head *head, int size)
     mergesort(&head2, size - mid);
     mergetwolist(&head1, &head2, head);
 }
-
-
 void q_sort(struct list_head *head)
 {
     if (!head || list_empty(head) || list_is_singular(head))
