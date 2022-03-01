@@ -28,7 +28,21 @@ struct list_head *q_new()
     return new_node;
 }
 /* Free all storage used by queue */
-void q_free(struct list_head *l) {}
+void q_free(struct list_head *l)
+{
+    if (!l)
+        return;
+    struct list_head *current = l->next;
+    while (current != l) {
+        struct list_head *temp_pointer = current;
+        element_t *temp_node = list_entry(temp_pointer, element_t, list);
+        current = current->next;
+        list_del(temp_pointer);
+        free(temp_node->value);
+        free(temp_node);
+    }
+    free(l);
+}
 
 /*
  * Attempt to insert element at head of queue.
@@ -317,11 +331,87 @@ void q_swap(struct list_head *head)
  * (e.g., by calling q_insert_head, q_insert_tail, or q_remove_head).
  * It should rearrange the existing ones.
  */
-void q_reverse(struct list_head *head) {}
+void q_reverse(struct list_head *head)
+{
+    if (head == NULL || head->next == head)
+        return;
+    struct list_head *temp;
+    struct list_head *current = head->next;
+    while (current != head) {
+        temp = current->next;
+        current->next = current->prev;
+        current->prev = temp;
+
+        current = temp;
+    }
+    temp = head->next;
+    head->next = head->prev;
+    head->prev = temp;
+}
 
 /*
  * Sort elements of queue in ascending order
  * No effect if q is NULL or empty. In addition, if q has only one
  * element, do nothing.
  */
-void q_sort(struct list_head *head) {}
+void mergetwolist(struct list_head *head1,
+                  struct list_head *head2,
+                  struct list_head *head)
+{
+    if (!head || !head1 || !head2 || (list_empty(head1) && list_empty(head2)))
+        return;
+    if (list_empty(head1)) {
+        list_splice_tail_init(head2, head);
+        return;
+    }
+    if (list_empty(head2)) {
+        list_splice_tail_init(head1, head);
+        return;
+    }
+    struct list_head *temp = NULL;
+    struct list_head *p_1 = head1->next;
+    struct list_head *p_2 = head2->next;
+    while (p_1 != head1 && p_2 != head2) {
+        if (strcmp(list_entry(p_1, element_t, list)->value,
+                   list_entry(p_2, element_t, list)->value) > 0) {
+            temp = p_2;
+            p_2 = p_2->next;
+            list_move_tail(temp, head);
+        } else {
+            temp = p_1;
+            p_1 = p_1->next;
+            list_move_tail(temp, head);
+        }
+    }
+    list_splice_tail_init(head1, head);
+    list_splice_tail_init(head2, head);
+}
+
+void mergesort(struct list_head *head, int size)
+{
+    if (!head || list_empty(head) || list_is_singular(head))
+        return;
+    LIST_HEAD(head1);
+    LIST_HEAD(head2);
+    int mid = size / 2, count = 0;
+    struct list_head *node = NULL, *safe = NULL;
+    list_for_each_safe (node, safe, head) {
+        count++;
+        if (count == mid) {
+            list_cut_position(&head1, head, node);
+            list_splice_tail_init(head, &head2);
+            break;
+        }
+    }
+    mergesort(&head1, mid);
+    mergesort(&head2, size - mid);
+    mergetwolist(&head1, &head2, head);
+}
+
+
+void q_sort(struct list_head *head)
+{
+    if (!head || list_empty(head) || list_is_singular(head))
+        return;
+    mergesort(head, q_size(head));
+}
