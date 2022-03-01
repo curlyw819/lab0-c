@@ -119,8 +119,10 @@ element_t *q_remove_head(struct list_head *head, char *sp, size_t bufsize)
     if (!head || head->next == head || head->prev == head)
         return NULL;
     element_t *temp_node = list_first_entry(head, element_t, list);
-    if (sp)
+    if (sp) {
         memcpy(sp, temp_node->value, bufsize);
+        sp[bufsize - 1] = '\0';
+    }
     list_del(head->next);
     return temp_node;
 }
@@ -134,8 +136,11 @@ element_t *q_remove_tail(struct list_head *head, char *sp, size_t bufsize)
     if (!head || head->next == head || head->prev == head)
         return NULL;
     element_t *temp_node = list_last_entry(head, element_t, list);
-    if (sp)
+    if (sp) {
         memcpy(sp, temp_node->value, bufsize);
+        sp[bufsize - 1] = '\0';
+    }
+
     list_del(head->prev);
     return temp_node;
 }
@@ -269,7 +274,6 @@ bool q_delete_dup(struct list_head *head)
             if (current_pointer->next != head) {
                 temp = list_entry(current_pointer->next, element_t, list);
                 if (strcmp(temp->value, ref) == 0) {
-                    printf("HI\n");
                     current_pointer = current_pointer->next;
                     ref_pointer = current_pointer;
                 }
@@ -321,7 +325,6 @@ void q_swap(struct list_head *head)
         second->prev = current;
         current = current->next->next;
     }
-    printf("%d", count);
 }
 
 /*
